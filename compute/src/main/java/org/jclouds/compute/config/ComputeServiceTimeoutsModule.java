@@ -32,6 +32,7 @@ import javax.inject.Singleton;
 
 import org.jclouds.compute.domain.Image;
 import org.jclouds.compute.domain.NodeMetadata;
+import org.jclouds.compute.functions.PollNodeRunning;
 import org.jclouds.compute.predicates.AtomicImageAvailable;
 import org.jclouds.compute.predicates.AtomicImageDeleted;
 import org.jclouds.compute.predicates.AtomicNodeRunning;
@@ -43,14 +44,17 @@ import org.jclouds.compute.reference.ComputeServiceConstants.PollPeriod;
 import org.jclouds.compute.reference.ComputeServiceConstants.Timeouts;
 import org.jclouds.predicates.RetryablePredicate;
 
+import com.google.common.base.Function;
 import com.google.common.base.Predicate;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
+import com.google.inject.TypeLiteral;
+import com.google.inject.name.Names;
 
 /**
- * 
+ *
  * @author Adrian Cole
- * 
+ *
  */
 public class ComputeServiceTimeoutsModule extends AbstractModule {
 
@@ -59,8 +63,8 @@ public class ComputeServiceTimeoutsModule extends AbstractModule {
    @Named(TIMEOUT_NODE_RUNNING)
    protected Predicate<AtomicReference<NodeMetadata>> nodeRunning(
          AtomicNodeRunning statusRunning, Timeouts timeouts, PollPeriod period) {
-      return timeouts.nodeRunning == 0 ? 
-             statusRunning : 
+      return timeouts.nodeRunning == 0 ?
+             statusRunning :
              new RetryablePredicateGuardingNull<NodeMetadata>(
                    statusRunning, timeouts.nodeRunning, period.pollInitialPeriod, period.pollMaxPeriod);
    }
@@ -70,24 +74,24 @@ public class ComputeServiceTimeoutsModule extends AbstractModule {
    @Named(TIMEOUT_NODE_TERMINATED)
    protected Predicate<AtomicReference<NodeMetadata>> serverTerminated(
          AtomicNodeTerminated statusTerminated, Timeouts timeouts, PollPeriod period) {
-      return timeouts.nodeTerminated == 0 ? 
-             statusTerminated : 
+      return timeouts.nodeTerminated == 0 ?
+             statusTerminated :
              new RetryablePredicate<AtomicReference<NodeMetadata>>(
                    statusTerminated, timeouts.nodeTerminated, period.pollInitialPeriod, period.pollMaxPeriod);
    }
-   
+
 
    @Provides
    @Singleton
    @Named(TIMEOUT_NODE_SUSPENDED)
    protected Predicate<AtomicReference<NodeMetadata>> serverSuspended(
          AtomicNodeSuspended statusSuspended, Timeouts timeouts, PollPeriod period) {
-      return timeouts.nodeSuspended == 0 ? 
-             statusSuspended : 
+      return timeouts.nodeSuspended == 0 ?
+             statusSuspended :
              new RetryablePredicateGuardingNull<NodeMetadata>(
                    statusSuspended, timeouts.nodeSuspended, period.pollInitialPeriod, period.pollMaxPeriod);
    }
-   
+
    @Provides
    @Singleton
    @Named(TIMEOUT_SCRIPT_COMPLETE)
@@ -95,14 +99,14 @@ public class ComputeServiceTimeoutsModule extends AbstractModule {
       return timeouts.scriptComplete == 0 ? not(statusRunning) : new RetryablePredicate<CommandUsingClient>(
             not(statusRunning), timeouts.scriptComplete);
    }
-   
+
    @Provides
    @Singleton
    @Named(TIMEOUT_IMAGE_AVAILABLE)
    protected Predicate<AtomicReference<Image>> imageAvailable(
          AtomicImageAvailable statusAvailable, Timeouts timeouts, PollPeriod period) {
-      return timeouts.imageAvailable == 0 ? 
-             statusAvailable : 
+      return timeouts.imageAvailable == 0 ?
+             statusAvailable :
              new RetryablePredicateGuardingNull<Image>(
                    statusAvailable, timeouts.imageAvailable, period.pollInitialPeriod, period.pollMaxPeriod);
    }
@@ -112,14 +116,17 @@ public class ComputeServiceTimeoutsModule extends AbstractModule {
    @Named(TIMEOUT_IMAGE_DELETED)
    protected Predicate<AtomicReference<Image>> serverDeleted(
          AtomicImageDeleted statusDeleted, Timeouts timeouts, PollPeriod period) {
-      return timeouts.imageDeleted == 0 ? 
-             statusDeleted : 
+      return timeouts.imageDeleted == 0 ?
+             statusDeleted :
              new RetryablePredicate<AtomicReference<Image>>(
                    statusDeleted, timeouts.imageDeleted, period.pollInitialPeriod, period.pollMaxPeriod);
    }
-   
+
    @Override
    protected void configure() {
+
+      bind(new TypeLiteral<Function<AtomicReference<NodeMetadata>, AtomicReference<NodeMetadata>>>() {
+      }).annotatedWith(Names.named(TIMEOUT_NODE_RUNNING)).to(PollNodeRunning.class);
 
    }
 
@@ -127,22 +134,22 @@ public class ComputeServiceTimeoutsModule extends AbstractModule {
     * Avoids "losing" the ComputeMetadata if client returns null temporarily (issue #989).
     * Ensures we always pass a non-null to the wrapped predicate, but will propagate the null to
     * the caller qt the end.
-    * 
+    *
     * @author Aled Sage
     */
    private static class RetryablePredicateGuardingNull<T> implements Predicate<AtomicReference<T>> {
       private class AtomicRefAndOrig {
          private final T orig;
          private final AtomicReference<T> ref;
-         
+
          AtomicRefAndOrig(T orig, AtomicReference<T> ref) {
             this.orig = orig;
             this.ref = ref;
          }
       }
-      
+
       private final RetryablePredicate<AtomicRefAndOrig> retryablePredicate;
-      
+
       public RetryablePredicateGuardingNull(final Predicate<AtomicReference<T>> predicate, long maxWait, long period, long maxPeriod) {
          Predicate<AtomicRefAndOrig> nonNullThingPredicate = new Predicate<AtomicRefAndOrig>() {
             @Override
