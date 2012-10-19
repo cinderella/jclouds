@@ -30,29 +30,34 @@ import org.jclouds.rest.annotations.ExceptionParser;
 import org.jclouds.rest.annotations.JAXBResponseParser;
 import org.jclouds.rest.annotations.RequestFilters;
 import org.jclouds.rest.functions.ReturnNullOnNotFoundOr404;
+import org.jclouds.vcloud.director.v1_5.VCloudDirectorConstants;
+import org.jclouds.vcloud.director.v1_5.VCloudDirectorMediaType;
 import org.jclouds.vcloud.director.v1_5.domain.Metadata;
 import org.jclouds.vcloud.director.v1_5.domain.org.Org;
 import org.jclouds.vcloud.director.v1_5.domain.org.OrgList;
 import org.jclouds.vcloud.director.v1_5.filters.AddVCloudAuthorizationAndCookieToRequest;
+import org.jclouds.vcloud.director.v1_5.filters.AddVCloudVersionToRequest;
 import org.jclouds.vcloud.director.v1_5.functions.href.OrgURNToHref;
 
 import com.google.common.util.concurrent.ListenableFuture;
+
 
 /**
  * @see OrgApi
  * @author Adrian Cole
  */
-@RequestFilters(AddVCloudAuthorizationAndCookieToRequest.class)
+@RequestFilters({AddVCloudAuthorizationAndCookieToRequest.class, AddVCloudVersionToRequest.class})
 public interface OrgAsyncApi {
 
-   /**
-    * @see OrgApi#list()
-    */
-   @GET
-   @Path("/org/")
-   @Consumes
-   @JAXBResponseParser
-   ListenableFuture<OrgList> list();
+    /**
+     * @see OrgApi#list()
+     */
+    @GET
+    @Path("/org/")
+    @Consumes
+    @JAXBResponseParser
+    ListenableFuture<OrgList> list();
+
 
    /**
     * @see OrgApi#get(String)

@@ -48,6 +48,7 @@ import org.jclouds.vcloud.director.v1_5.domain.params.ComposeVAppParams;
 import org.jclouds.vcloud.director.v1_5.domain.params.InstantiateVAppParams;
 import org.jclouds.vcloud.director.v1_5.domain.params.UploadVAppTemplateParams;
 import org.jclouds.vcloud.director.v1_5.filters.AddVCloudAuthorizationAndCookieToRequest;
+import org.jclouds.vcloud.director.v1_5.filters.AddVCloudVersionToRequest;
 import org.jclouds.vcloud.director.v1_5.functions.href.VdcURNToHref;
 
 import com.google.common.util.concurrent.ListenableFuture;
@@ -56,7 +57,7 @@ import com.google.common.util.concurrent.ListenableFuture;
  * @see VdcApi
  * @author danikov, Adrian Cole
  */
-@RequestFilters(AddVCloudAuthorizationAndCookieToRequest.class)
+@RequestFilters({AddVCloudAuthorizationAndCookieToRequest.class, AddVCloudVersionToRequest.class})
 public interface VdcAsyncApi {
 
    /**

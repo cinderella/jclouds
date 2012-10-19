@@ -54,6 +54,7 @@ import org.jclouds.vcloud.director.v1_5.filters.AddVCloudAuthorizationAndCookieT
 
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.inject.Provides;
+import org.jclouds.vcloud.director.v1_5.filters.AddVCloudVersionToRequest;
 
 /**
  * Provides asynchronous access to VCloudDirector via their REST API.
@@ -61,7 +62,7 @@ import com.google.inject.Provides;
  * @see VCloudDirectorApi
  * @author Adrian Cole
  */
-@RequestFilters(AddVCloudAuthorizationAndCookieToRequest.class)
+@RequestFilters({AddVCloudAuthorizationAndCookieToRequest.class, AddVCloudVersionToRequest.class})
 @SkipEncoding({ '-', ':' })
 public interface VCloudDirectorAsyncApi {
 

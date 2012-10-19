@@ -31,12 +31,14 @@ import org.jclouds.rest.annotations.JAXBResponseParser;
 import org.jclouds.rest.annotations.MapBinder;
 import org.jclouds.rest.annotations.PayloadParam;
 import org.jclouds.rest.annotations.ResponseParser;
+import org.jclouds.vcloud.director.v1_5.VCloudDirectorMediaType;
 import org.jclouds.vcloud.director.v1_5.binders.BindUserOrgAndPasswordAsBasicAuthorizationHeader;
 import org.jclouds.vcloud.director.v1_5.domain.Session;
 import org.jclouds.vcloud.director.v1_5.domain.SessionWithToken;
 import org.jclouds.vcloud.director.v1_5.parsers.SessionWithTokenFromXMLAndHeader;
 
 import com.google.common.util.concurrent.ListenableFuture;
+import org.jclouds.vcloud.director.v1_5.VCloudDirectorConstants;
 
 /**
  * Provides asynchronous access to Session via their REST API.
@@ -51,7 +53,7 @@ public interface SessionAsyncApi {
     * @see SessionApi#loginUserInOrgWithPassword
     */
    @POST
-   @Consumes
+   @Consumes(value = VCloudDirectorMediaType.APPLICATION_XML_1_5)
    @ResponseParser(SessionWithTokenFromXMLAndHeader.class)
    @MapBinder(BindUserOrgAndPasswordAsBasicAuthorizationHeader.class)
    ListenableFuture<SessionWithToken> loginUserInOrgWithPassword(@EndpointParam URI loginUrl,
