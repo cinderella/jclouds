@@ -47,6 +47,7 @@ import org.jclouds.vcloud.director.v1_5.domain.params.PublishCatalogParams;
 import org.jclouds.vcloud.director.v1_5.features.CatalogAsyncApi;
 import org.jclouds.vcloud.director.v1_5.features.MetadataAsyncApi;
 import org.jclouds.vcloud.director.v1_5.filters.AddVCloudAuthorizationAndCookieToRequest;
+import org.jclouds.vcloud.director.v1_5.filters.AddVCloudVersionToRequest;
 import org.jclouds.vcloud.director.v1_5.functions.href.CatalogURNToAdminHref;
 import org.jclouds.vcloud.director.v1_5.functions.href.OrgURNToAdminHref;
 
@@ -56,7 +57,7 @@ import com.google.common.util.concurrent.ListenableFuture;
  * @see AdminCatalogApi
  * @author danikov, Adrian Cole
  */
-@RequestFilters(AddVCloudAuthorizationAndCookieToRequest.class)
+@RequestFilters({AddVCloudAuthorizationAndCookieToRequest.class, AddVCloudVersionToRequest.class})
 public interface AdminCatalogAsyncApi extends CatalogAsyncApi {
 
    /**

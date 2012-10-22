@@ -42,6 +42,7 @@ import org.jclouds.vcloud.director.v1_5.domain.org.OrgNetwork;
 import org.jclouds.vcloud.director.v1_5.features.MetadataAsyncApi;
 import org.jclouds.vcloud.director.v1_5.features.NetworkAsyncApi;
 import org.jclouds.vcloud.director.v1_5.filters.AddVCloudAuthorizationAndCookieToRequest;
+import org.jclouds.vcloud.director.v1_5.filters.AddVCloudVersionToRequest;
 import org.jclouds.vcloud.director.v1_5.functions.href.NetworkURNToAdminHref;
 
 import com.google.common.util.concurrent.ListenableFuture;
@@ -50,7 +51,7 @@ import com.google.common.util.concurrent.ListenableFuture;
  * @see AdminNetworkApi
  * @author danikov
  */
-@RequestFilters(AddVCloudAuthorizationAndCookieToRequest.class)
+@RequestFilters({AddVCloudAuthorizationAndCookieToRequest.class, AddVCloudVersionToRequest.class})
 public interface AdminNetworkAsyncApi extends NetworkAsyncApi {
 
    /**

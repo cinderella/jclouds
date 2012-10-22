@@ -53,7 +53,7 @@ public interface SessionAsyncApi {
     * @see SessionApi#loginUserInOrgWithPassword
     */
    @POST
-   @Consumes(value = VCloudDirectorMediaType.APPLICATION_XML_1_5)
+   @Consumes(value = "application/*+xml;version=1.5")
    @ResponseParser(SessionWithTokenFromXMLAndHeader.class)
    @MapBinder(BindUserOrgAndPasswordAsBasicAuthorizationHeader.class)
    ListenableFuture<SessionWithToken> loginUserInOrgWithPassword(@EndpointParam URI loginUrl,

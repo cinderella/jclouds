@@ -28,12 +28,13 @@ import org.jclouds.rest.annotations.RequestFilters;
 import org.jclouds.vcloud.director.v1_5.filters.AddVCloudAuthorizationAndCookieToRequest;
 
 import com.google.common.util.concurrent.ListenableFuture;
+import org.jclouds.vcloud.director.v1_5.filters.AddVCloudVersionToRequest;
 
 /**
  * @see UploadApi
  * @author danikov
  */
-@RequestFilters(AddVCloudAuthorizationAndCookieToRequest.class)
+@RequestFilters({AddVCloudAuthorizationAndCookieToRequest.class, AddVCloudVersionToRequest.class})
 public interface UploadAsyncApi {
 
    /**

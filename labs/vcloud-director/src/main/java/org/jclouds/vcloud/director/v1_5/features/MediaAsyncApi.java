@@ -43,6 +43,7 @@ import org.jclouds.vcloud.director.v1_5.domain.Owner;
 import org.jclouds.vcloud.director.v1_5.domain.Task;
 import org.jclouds.vcloud.director.v1_5.domain.params.CloneMediaParams;
 import org.jclouds.vcloud.director.v1_5.filters.AddVCloudAuthorizationAndCookieToRequest;
+import org.jclouds.vcloud.director.v1_5.filters.AddVCloudVersionToRequest;
 import org.jclouds.vcloud.director.v1_5.functions.href.MediaURNToHref;
 
 import com.google.common.util.concurrent.ListenableFuture;
@@ -51,7 +52,7 @@ import com.google.common.util.concurrent.ListenableFuture;
  * @see MediaApi
  * @author danikov, Adrian Cole
  */
-@RequestFilters(AddVCloudAuthorizationAndCookieToRequest.class)
+@RequestFilters({AddVCloudAuthorizationAndCookieToRequest.class, AddVCloudVersionToRequest.class})
 public interface MediaAsyncApi {
 
    /**
