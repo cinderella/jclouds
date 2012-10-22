@@ -35,6 +35,7 @@ import org.jclouds.vcloud.director.v1_5.features.QueryAsyncApi;
 import org.jclouds.vcloud.director.v1_5.filters.AddVCloudAuthorizationAndCookieToRequest;
 
 import com.google.common.util.concurrent.ListenableFuture;
+import org.jclouds.vcloud.director.v1_5.filters.AddVCloudVersionToRequest;
 
 /**
  * Provides asynchronous access to {@link AdminQuery} objects.
@@ -42,7 +43,7 @@ import com.google.common.util.concurrent.ListenableFuture;
  * @see AdminQueryApi
  * @author Aled Sage
  */
-@RequestFilters(AddVCloudAuthorizationAndCookieToRequest.class)
+@RequestFilters({AddVCloudAuthorizationAndCookieToRequest.class, AddVCloudVersionToRequest.class})
 @Timeout(duration = 180, timeUnit = TimeUnit.SECONDS)
 public interface AdminQueryAsyncApi extends QueryAsyncApi {
    

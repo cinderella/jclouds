@@ -26,15 +26,13 @@ import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
 import javax.ws.rs.POST;
 
-import org.jclouds.rest.annotations.EndpointParam;
-import org.jclouds.rest.annotations.JAXBResponseParser;
-import org.jclouds.rest.annotations.MapBinder;
-import org.jclouds.rest.annotations.PayloadParam;
-import org.jclouds.rest.annotations.ResponseParser;
+import org.jclouds.rest.annotations.*;
 import org.jclouds.vcloud.director.v1_5.VCloudDirectorMediaType;
 import org.jclouds.vcloud.director.v1_5.binders.BindUserOrgAndPasswordAsBasicAuthorizationHeader;
 import org.jclouds.vcloud.director.v1_5.domain.Session;
 import org.jclouds.vcloud.director.v1_5.domain.SessionWithToken;
+import org.jclouds.vcloud.director.v1_5.filters.AddVCloudAuthorizationAndCookieToRequest;
+import org.jclouds.vcloud.director.v1_5.filters.AddVCloudVersionToRequest;
 import org.jclouds.vcloud.director.v1_5.parsers.SessionWithTokenFromXMLAndHeader;
 
 import com.google.common.util.concurrent.ListenableFuture;
@@ -47,13 +45,14 @@ import org.jclouds.vcloud.director.v1_5.VCloudDirectorConstants;
  * @see SessionApi
  * @author Adrian Cole
  */
+@RequestFilters(AddVCloudVersionToRequest.class)
 public interface SessionAsyncApi {
 
    /**
     * @see SessionApi#loginUserInOrgWithPassword
     */
    @POST
-   @Consumes(value = VCloudDirectorMediaType.APPLICATION_XML_1_5)
+   @Consumes
    @ResponseParser(SessionWithTokenFromXMLAndHeader.class)
    @MapBinder(BindUserOrgAndPasswordAsBasicAuthorizationHeader.class)
    ListenableFuture<SessionWithToken> loginUserInOrgWithPassword(@EndpointParam URI loginUrl,

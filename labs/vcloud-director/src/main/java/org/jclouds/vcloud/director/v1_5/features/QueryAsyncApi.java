@@ -36,12 +36,13 @@ import org.jclouds.vcloud.director.v1_5.domain.query.VAppReferences;
 import org.jclouds.vcloud.director.v1_5.filters.AddVCloudAuthorizationAndCookieToRequest;
 
 import com.google.common.util.concurrent.ListenableFuture;
+import org.jclouds.vcloud.director.v1_5.filters.AddVCloudVersionToRequest;
 
 /**
  * @see QueryApi
  * @author grkvlt@apache.org
  */
-@RequestFilters(AddVCloudAuthorizationAndCookieToRequest.class)
+@RequestFilters({AddVCloudAuthorizationAndCookieToRequest.class, AddVCloudVersionToRequest.class})
 @SkipEncoding({ '=' })
 public interface QueryAsyncApi {
 

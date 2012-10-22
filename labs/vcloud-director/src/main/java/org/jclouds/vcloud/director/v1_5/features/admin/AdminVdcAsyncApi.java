@@ -41,6 +41,7 @@ import org.jclouds.vcloud.director.v1_5.features.MetadataAsyncApi;
 import org.jclouds.vcloud.director.v1_5.features.MetadataAsyncApi.Writeable;
 import org.jclouds.vcloud.director.v1_5.features.VdcAsyncApi;
 import org.jclouds.vcloud.director.v1_5.filters.AddVCloudAuthorizationAndCookieToRequest;
+import org.jclouds.vcloud.director.v1_5.filters.AddVCloudVersionToRequest;
 import org.jclouds.vcloud.director.v1_5.functions.href.VdcURNToAdminHref;
 
 import com.google.common.util.concurrent.ListenableFuture;
@@ -49,7 +50,7 @@ import com.google.common.util.concurrent.ListenableFuture;
  * @see AdminVdcApi
  * @author danikov, Adrian Cole
  */
-@RequestFilters(AddVCloudAuthorizationAndCookieToRequest.class)
+@RequestFilters({AddVCloudAuthorizationAndCookieToRequest.class, AddVCloudVersionToRequest.class})
 public interface AdminVdcAsyncApi extends VdcAsyncApi {
    /**
     * @see AdminVdcApi#get(String)
