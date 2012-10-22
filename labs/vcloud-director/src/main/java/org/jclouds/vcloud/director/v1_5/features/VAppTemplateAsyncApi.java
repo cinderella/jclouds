@@ -57,6 +57,7 @@ import org.jclouds.vcloud.director.v1_5.domain.section.CustomizationSection;
 import org.jclouds.vcloud.director.v1_5.domain.section.LeaseSettingsSection;
 import org.jclouds.vcloud.director.v1_5.domain.section.NetworkConfigSection;
 import org.jclouds.vcloud.director.v1_5.filters.AddVCloudAuthorizationAndCookieToRequest;
+import org.jclouds.vcloud.director.v1_5.filters.AddVCloudVersionToRequest;
 import org.jclouds.vcloud.director.v1_5.functions.href.VAppTemplateURNToHref;
 
 import com.google.common.util.concurrent.ListenableFuture;
@@ -65,7 +66,7 @@ import com.google.common.util.concurrent.ListenableFuture;
  * @author Adam Lowe, Adrian Cole
  * @see VAppTemplateApi
  */
-@RequestFilters(AddVCloudAuthorizationAndCookieToRequest.class)
+@RequestFilters({AddVCloudAuthorizationAndCookieToRequest.class, AddVCloudVersionToRequest.class})
 public interface VAppTemplateAsyncApi {
 
    /**

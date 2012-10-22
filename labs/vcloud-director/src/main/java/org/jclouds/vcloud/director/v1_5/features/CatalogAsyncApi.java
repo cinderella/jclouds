@@ -41,6 +41,7 @@ import org.jclouds.vcloud.director.v1_5.domain.Catalog;
 import org.jclouds.vcloud.director.v1_5.domain.CatalogItem;
 import org.jclouds.vcloud.director.v1_5.domain.Metadata;
 import org.jclouds.vcloud.director.v1_5.filters.AddVCloudAuthorizationAndCookieToRequest;
+import org.jclouds.vcloud.director.v1_5.filters.AddVCloudVersionToRequest;
 import org.jclouds.vcloud.director.v1_5.functions.href.CatalogItemURNToHref;
 import org.jclouds.vcloud.director.v1_5.functions.href.CatalogURNToHref;
 
@@ -50,7 +51,7 @@ import com.google.common.util.concurrent.ListenableFuture;
  * @see CatalogApi
  * @author grkvlt@apache.org, Adrian Cole
  */
-@RequestFilters(AddVCloudAuthorizationAndCookieToRequest.class)
+@RequestFilters({AddVCloudAuthorizationAndCookieToRequest.class, AddVCloudVersionToRequest.class})
 public interface CatalogAsyncApi {
 
    /**

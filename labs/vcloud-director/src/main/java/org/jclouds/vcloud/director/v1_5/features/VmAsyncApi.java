@@ -73,6 +73,7 @@ import org.jclouds.vcloud.director.v1_5.domain.section.OperatingSystemSection;
 import org.jclouds.vcloud.director.v1_5.domain.section.RuntimeInfoSection;
 import org.jclouds.vcloud.director.v1_5.domain.section.VirtualHardwareSection;
 import org.jclouds.vcloud.director.v1_5.filters.AddVCloudAuthorizationAndCookieToRequest;
+import org.jclouds.vcloud.director.v1_5.filters.AddVCloudVersionToRequest;
 import org.jclouds.vcloud.director.v1_5.functions.ReturnPayloadBytes;
 import org.jclouds.vcloud.director.v1_5.functions.href.VmURNToHref;
 
@@ -82,7 +83,7 @@ import com.google.common.util.concurrent.ListenableFuture;
  * @author grkvlt@apache.org, Adrian Cole
  * @see VmApi
  */
-@RequestFilters(AddVCloudAuthorizationAndCookieToRequest.class)
+@RequestFilters({AddVCloudAuthorizationAndCookieToRequest.class, AddVCloudVersionToRequest.class})
 public interface VmAsyncApi {
 
    /**

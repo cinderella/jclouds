@@ -41,6 +41,7 @@ import org.jclouds.vcloud.director.v1_5.binders.BindStringAsMetadataValue;
 import org.jclouds.vcloud.director.v1_5.domain.Metadata;
 import org.jclouds.vcloud.director.v1_5.domain.Task;
 import org.jclouds.vcloud.director.v1_5.filters.AddVCloudAuthorizationAndCookieToRequest;
+import org.jclouds.vcloud.director.v1_5.filters.AddVCloudVersionToRequest;
 import org.jclouds.vcloud.director.v1_5.functions.RegexValueParser;
 
 import com.google.common.util.concurrent.ListenableFuture;
@@ -51,7 +52,7 @@ import com.google.common.util.concurrent.ListenableFuture;
  */
 public interface MetadataAsyncApi {
 
-   @RequestFilters(AddVCloudAuthorizationAndCookieToRequest.class)
+   @RequestFilters({AddVCloudAuthorizationAndCookieToRequest.class, AddVCloudVersionToRequest.class})
    public static interface Readable extends MetadataAsyncApi {
 
       /**
@@ -76,7 +77,7 @@ public interface MetadataAsyncApi {
 
    }
 
-   @RequestFilters(AddVCloudAuthorizationAndCookieToRequest.class)
+   @RequestFilters({AddVCloudAuthorizationAndCookieToRequest.class, AddVCloudVersionToRequest.class})
    public static interface Writeable extends Readable {
 
       /**
