@@ -43,7 +43,6 @@ import java.lang.reflect.Type;
 import java.lang.reflect.WildcardType;
 import java.net.URI;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -753,7 +752,7 @@ public class RestAnnotationProcessor<T> {
       return null;
    }
 
-   private final static TypeLiteral<Supplier<URI>> uriSupplierLiteral = new TypeLiteral<Supplier<URI>>() {
+   private static final TypeLiteral<Supplier<URI>> uriSupplierLiteral = new TypeLiteral<Supplier<URI>>() {
    };
 
    // TODO: change to LoadingCache<ClassMethodArgs, URI> and move this logic to the CacheLoader.
@@ -851,7 +850,7 @@ public class RestAnnotationProcessor<T> {
       if (method.getReturnType().getTypeParameters().length == 0) {
          returnVal = method.getReturnType();
       } else if (method.getReturnType().equals(ListenableFuture.class)) {
-         ParameterizedType futureType = ((ParameterizedType) method.getGenericReturnType());
+         ParameterizedType futureType = (ParameterizedType) method.getGenericReturnType();
          returnVal = futureType.getActualTypeArguments()[0];
          if (returnVal instanceof WildcardType)
             returnVal = WildcardType.class.cast(returnVal).getUpperBounds()[0];
@@ -1087,7 +1086,7 @@ public class RestAnnotationProcessor<T> {
    }
 
    private static List<String> getAcceptHeadersOrNull(Method method) {
-      List<String> accept = Collections.emptyList();
+      List<String> accept = ImmutableList.of();
       if (method.getDeclaringClass().isAnnotationPresent(Consumes.class)) {
          Consumes header = method.getDeclaringClass().getAnnotation(Consumes.class);
          accept = asList(header.value());

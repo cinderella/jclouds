@@ -28,7 +28,6 @@ import javax.annotation.Resource;
 import javax.inject.Named;
 import javax.inject.Qualifier;
 import javax.inject.Singleton;
-import javax.ws.rs.Path;
 
 import org.jclouds.Constants;
 import org.jclouds.concurrent.ExceptionParsingListenableFuture;
@@ -134,7 +133,7 @@ public class AsyncRestClientProxy<T> implements InvocationHandler {
 
    };
 
-   public Object invoke(Object o, Method method, Object[] args) throws Throwable {
+   public Object invoke(Object o, Method method, Object[] args) throws ExecutionException {
       if (method.getName().equals("equals")) {
          return this.equals(o);
       } else if (method.getName().equals("toString")) {

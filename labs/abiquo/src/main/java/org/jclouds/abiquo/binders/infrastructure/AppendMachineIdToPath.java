@@ -23,7 +23,6 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import org.jclouds.abiquo.binders.AppendToPath;
-import org.jclouds.abiquo.domain.infrastructure.Machine;
 import org.jclouds.abiquo.functions.infrastructure.ParseMachineId;
 import org.jclouds.http.HttpRequest;
 
@@ -33,21 +32,18 @@ import org.jclouds.http.HttpRequest;
  * @author Ignasi Barrera
  */
 @Singleton
-public class AppendMachineIdToPath extends AppendToPath
-{
-    private ParseMachineId parser;
+public class AppendMachineIdToPath extends AppendToPath {
+   private ParseMachineId parser;
 
-    @Inject
-    public AppendMachineIdToPath(final ParseMachineId parser)
-    {
-        super();
-        this.parser = parser;
-    }
+   @Inject
+   public AppendMachineIdToPath(final ParseMachineId parser) {
+      super();
+      this.parser = parser;
+   }
 
-    @Override
-    protected <R extends HttpRequest> String getValue(final R request, final Object input)
-    {
-        return parser.apply(input);
-    }
+   @Override
+   protected <R extends HttpRequest> String getValue(final R request, final Object input) {
+      return parser.apply(input);
+   }
 
 }

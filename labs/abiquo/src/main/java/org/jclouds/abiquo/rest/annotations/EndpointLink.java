@@ -25,17 +25,16 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Indicates the link to be used to generate the enpoind for the request.
+ * Indicates the link to be used to generate the endpoint for the request.
  * 
  * @author Ignasi Barrera
  */
-@Target({ElementType.PARAMETER})
+@Target({ ElementType.PARAMETER })
 @Retention(RetentionPolicy.RUNTIME)
-public @interface EndpointLink
-{
+public @interface EndpointLink {
 
-    /**
-     * The name of the link that will be used to generate the request endpoint.
-     */
-    String value();
+   /**
+    * The name of the link that will be used to generate the request endpoint.
+    */
+   String value();
 }

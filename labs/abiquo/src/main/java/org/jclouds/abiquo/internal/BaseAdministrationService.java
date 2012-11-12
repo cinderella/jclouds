@@ -20,15 +20,15 @@
 package org.jclouds.abiquo.internal;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.collect.Iterables.filter;
+import static com.google.common.collect.Iterables.getFirst;
 import static org.jclouds.abiquo.domain.DomainWrapper.wrap;
-
-import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import org.jclouds.abiquo.AbiquoAsyncApi;
 import org.jclouds.abiquo.AbiquoApi;
+import org.jclouds.abiquo.AbiquoAsyncApi;
 import org.jclouds.abiquo.domain.config.Category;
 import org.jclouds.abiquo.domain.config.License;
 import org.jclouds.abiquo.domain.config.Privilege;
@@ -43,21 +43,23 @@ import org.jclouds.abiquo.domain.infrastructure.Datacenter;
 import org.jclouds.abiquo.domain.infrastructure.Machine;
 import org.jclouds.abiquo.features.services.AdministrationService;
 import org.jclouds.abiquo.reference.ValidationErrors;
-import org.jclouds.abiquo.strategy.admin.ListRoles;
-import org.jclouds.abiquo.strategy.config.ListCategories;
-import org.jclouds.abiquo.strategy.config.ListLicenses;
-import org.jclouds.abiquo.strategy.config.ListPrivileges;
-import org.jclouds.abiquo.strategy.config.ListProperties;
-import org.jclouds.abiquo.strategy.enterprise.ListEnterprises;
-import org.jclouds.abiquo.strategy.infrastructure.ListDatacenters;
 import org.jclouds.abiquo.strategy.infrastructure.ListMachines;
 import org.jclouds.collect.Memoized;
 import org.jclouds.rest.RestContext;
 
+import com.abiquo.server.core.appslibrary.CategoriesDto;
+import com.abiquo.server.core.appslibrary.CategoryDto;
+import com.abiquo.server.core.config.LicensesDto;
+import com.abiquo.server.core.config.SystemPropertiesDto;
 import com.abiquo.server.core.enterprise.EnterpriseDto;
 import com.abiquo.server.core.enterprise.EnterprisePropertiesDto;
+import com.abiquo.server.core.enterprise.EnterprisesDto;
+import com.abiquo.server.core.enterprise.PrivilegeDto;
+import com.abiquo.server.core.enterprise.PrivilegesDto;
 import com.abiquo.server.core.enterprise.RoleDto;
+import com.abiquo.server.core.enterprise.RolesDto;
 import com.abiquo.server.core.infrastructure.DatacenterDto;
+import com.abiquo.server.core.infrastructure.DatacentersDto;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Predicate;
 import com.google.common.base.Supplier;
@@ -70,295 +72,241 @@ import com.google.common.collect.Iterables;
  * @author Francesc Montserrat
  */
 @Singleton
-public class BaseAdministrationService implements AdministrationService
-{
-    @VisibleForTesting
-    protected RestContext<AbiquoApi, AbiquoAsyncApi> context;
+public class BaseAdministrationService implements AdministrationService {
+   @VisibleForTesting
+   protected RestContext<AbiquoApi, AbiquoAsyncApi> context;
 
-    @VisibleForTesting
-    protected final ListDatacenters listDatacenters;
+   @VisibleForTesting
+   protected final ListMachines listMachines;
 
-    @VisibleForTesting
-    protected final ListMachines listMachines;
+   @VisibleForTesting
+   protected final Supplier<User> currentUser;
 
-    @VisibleForTesting
-    protected final ListEnterprises listEnterprises;
+   @VisibleForTesting
+   protected final Supplier<Enterprise> currentEnterprise;
 
-    @VisibleForTesting
-    protected final ListRoles listRoles;
+   @Inject
+   protected BaseAdministrationService(final RestContext<AbiquoApi, AbiquoAsyncApi> context,
+         final ListMachines listMachines, @Memoized final Supplier<User> currentUser,
+         @Memoized final Supplier<Enterprise> currentEnterprise) {
+      this.context = checkNotNull(context, "context");
+      this.listMachines = checkNotNull(listMachines, "listMachines");
+      this.currentUser = checkNotNull(currentUser, "currentUser");
+      this.currentEnterprise = checkNotNull(currentEnterprise, "currentEnterprise");
+   }
 
-    @VisibleForTesting
-    protected final ListLicenses listLicenses;
+   /*********************** Datacenter ********************** */
 
-    @VisibleForTesting
-    protected final ListPrivileges listPrivileges;
+   @Override
+   public Iterable<Datacenter> listDatacenters() {
+      DatacentersDto result = context.getApi().getInfrastructureApi().listDatacenters();
+      return wrap(context, Datacenter.class, result.getCollection());
+   }
 
-    @VisibleForTesting
-    protected final ListProperties listProperties;
+   @Override
+   public Iterable<Datacenter> listDatacenters(final Predicate<Datacenter> filter) {
+      return filter(listDatacenters(), filter);
+   }
 
-    @VisibleForTesting
-    protected final ListCategories listCategories;
+   @Override
+   public Datacenter findDatacenter(final Predicate<Datacenter> filter) {
+      return getFirst(listDatacenters(filter), null);
+   }
 
-    @VisibleForTesting
-    protected final Supplier<User> currentUser;
+   @Override
+   public Datacenter getDatacenter(final Integer datacenterId) {
+      DatacenterDto datacenter = context.getApi().getInfrastructureApi().getDatacenter(datacenterId);
+      return wrap(context, Datacenter.class, datacenter);
+   }
 
-    @VisibleForTesting
-    protected final Supplier<Enterprise> currentEnterprise;
+   /*********************** Machine ***********************/
 
-    @Inject
-    protected BaseAdministrationService(final RestContext<AbiquoApi, AbiquoAsyncApi> context,
-        final ListDatacenters listDatacenters, final ListMachines listMachines,
-        final ListEnterprises listEnterprises, final ListRoles listRoles,
-        final ListLicenses listLicenses, final ListPrivileges listPrivileges,
-        final ListProperties listProperties, final ListCategories listCategories,
-        @Memoized final Supplier<User> currentUser,
-        @Memoized final Supplier<Enterprise> currentEnterprise)
-    {
-        this.context = checkNotNull(context, "context");
-        this.listDatacenters = checkNotNull(listDatacenters, "listDatacenters");
-        this.listMachines = checkNotNull(listMachines, "listMachines");
-        this.listEnterprises = checkNotNull(listEnterprises, "listEnterprises");
-        this.listRoles = checkNotNull(listRoles, "listRoles");
-        this.listLicenses = checkNotNull(listLicenses, "listLicenses");
-        this.listPrivileges = checkNotNull(listPrivileges, "listPrivileges");
-        this.listProperties = checkNotNull(listProperties, "listProperties");
-        this.listCategories = checkNotNull(listCategories, "listCategories");
-        this.currentUser = checkNotNull(currentUser, "currentUser");
-        this.currentEnterprise = checkNotNull(currentEnterprise, "currentEnterprise");
-    }
+   @Override
+   public Iterable<Machine> listMachines() {
+      return listMachines.execute();
+   }
 
-    /*********************** Datacenter ********************** */
+   @Override
+   public Iterable<Machine> listMachines(final Predicate<Machine> filter) {
+      return listMachines.execute(filter);
+   }
 
-    @Override
-    public Iterable<Datacenter> listDatacenters()
-    {
-        return listDatacenters.execute();
-    }
+   @Override
+   public Machine findMachine(final Predicate<Machine> filter) {
+      return Iterables.getFirst(listMachines(filter), null);
+   }
 
-    @Override
-    public Iterable<Datacenter> listDatacenters(final Predicate<Datacenter> filter)
-    {
-        return listDatacenters.execute(filter);
-    }
+   /*********************** Enterprise ***********************/
 
-    @Override
-    public Datacenter getDatacenter(final Integer datacenterId)
-    {
-        DatacenterDto datacenter =
-            context.getApi().getInfrastructureApi().getDatacenter(datacenterId);
-        return wrap(context, Datacenter.class, datacenter);
-    }
+   @Override
+   public Iterable<Enterprise> listEnterprises() {
+      EnterprisesDto result = context.getApi().getEnterpriseApi().listEnterprises();
+      return wrap(context, Enterprise.class, result.getCollection());
+   }
 
-    @Override
-    public Datacenter findDatacenter(final Predicate<Datacenter> filter)
-    {
-        return Iterables.getFirst(listDatacenters(filter), null);
-    }
+   @Override
+   public Iterable<Enterprise> listEnterprises(final Predicate<Enterprise> filter) {
+      return filter(listEnterprises(), filter);
+   }
 
-    @Override
-    public Iterable<Datacenter> getDatacenters(final List<Integer> datacenterIds)
-    {
-        return listDatacenters.execute(datacenterIds);
-    }
+   @Override
+   public Enterprise findEnterprise(final Predicate<Enterprise> filter) {
+      return Iterables.getFirst(listEnterprises(filter), null);
+   }
 
-    /*********************** Machine ***********************/
+   @Override
+   public Enterprise getEnterprise(final Integer enterpriseId) {
+      EnterpriseDto enterprise = context.getApi().getEnterpriseApi().getEnterprise(enterpriseId);
+      return wrap(context, Enterprise.class, enterprise);
+   }
 
-    @Override
-    public Iterable<Machine> listMachines()
-    {
-        return listMachines.execute();
-    }
+   /*********************** Enterprise Properties ***********************/
 
-    @Override
-    public Iterable<Machine> listMachines(final Predicate<Machine> filter)
-    {
-        return listMachines.execute(filter);
-    }
+   @Override
+   public EnterpriseProperties getEnterpriseProperties(final Enterprise enterprise) {
+      checkNotNull(enterprise.getId(), ValidationErrors.MISSING_REQUIRED_FIELD + " id in " + Enterprise.class);
 
-    @Override
-    public Machine findMachine(final Predicate<Machine> filter)
-    {
-        return Iterables.getFirst(listMachines(filter), null);
-    }
+      EnterprisePropertiesDto properties = context.getApi().getEnterpriseApi()
+            .getEnterpriseProperties(enterprise.unwrap());
+      return wrap(context, EnterpriseProperties.class, properties);
+   }
 
-    /*********************** Enterprise ***********************/
+   /*********************** Role ********************** */
 
-    @Override
-    public Iterable<Enterprise> listEnterprises()
-    {
-        return listEnterprises.execute();
-    }
+   @Override
+   public Iterable<Role> listRoles() {
+      RolesDto result = context.getApi().getAdminApi().listRoles();
+      return wrap(context, Role.class, result.getCollection());
+   }
 
-    @Override
-    public Iterable<Enterprise> listEnterprises(final Predicate<Enterprise> filter)
-    {
-        return listEnterprises.execute(filter);
-    }
+   @Override
+   public Iterable<Role> listRoles(final Predicate<Role> filter) {
+      return filter(listRoles(), filter);
+   }
 
-    @Override
-    public Enterprise findEnterprise(final Predicate<Enterprise> filter)
-    {
-        return Iterables.getFirst(listEnterprises(filter), null);
-    }
+   @Override
+   public Role findRole(final Predicate<Role> filter) {
+      return getFirst(listRoles(filter), null);
+   }
 
-    @Override
-    public Enterprise getEnterprise(final Integer enterpriseId)
-    {
-        EnterpriseDto enterprise =
-            context.getApi().getEnterpriseApi().getEnterprise(enterpriseId);
-        return wrap(context, Enterprise.class, enterprise);
-    }
+   @Override
+   public Role getRole(final Integer roleId) {
+      RoleDto role = context.getApi().getAdminApi().getRole(roleId);
+      return wrap(context, Role.class, role);
+   }
 
-    /*********************** Enterprise Properties ***********************/
+   /*********************** Privilege ***********************/
 
-    @Override
-    public EnterpriseProperties getEnterpriseProperties(final Enterprise enterprise)
-    {
-        checkNotNull(enterprise.getId(), ValidationErrors.MISSING_REQUIRED_FIELD + " id in "
-            + Enterprise.class);
+   @Override
+   public Iterable<Privilege> listPrivileges() {
+      PrivilegesDto result = context.getApi().getConfigApi().listPrivileges();
+      return wrap(context, Privilege.class, result.getCollection());
+   }
 
-        EnterprisePropertiesDto properties =
-            context.getApi().getEnterpriseApi().getEnterpriseProperties(enterprise.unwrap());
-        return wrap(context, EnterpriseProperties.class, properties);
-    }
+   @Override
+   public Iterable<Privilege> listPrivileges(final Predicate<Privilege> filter) {
+      return filter(listPrivileges(), filter);
+   }
 
-    /*********************** Role ********************** */
+   @Override
+   public Privilege findPrivilege(final Predicate<Privilege> filter) {
+      return getFirst(listPrivileges(filter), null);
+   }
 
-    @Override
-    public Iterable<Role> listRoles()
-    {
-        return listRoles.execute();
-    }
+   @Override
+   public Privilege getPrivilege(Integer privilegeId) {
+      PrivilegeDto result = context.getApi().getConfigApi().getPrivilege(privilegeId);
+      return wrap(context, Privilege.class, result);
+   }
 
-    @Override
-    public Iterable<Role> listRoles(final Predicate<Role> filter)
-    {
-        return listRoles.execute(filter);
-    }
+   /*********************** User ***********************/
 
-    @Override
-    public Role findRole(final Predicate<Role> filter)
-    {
-        return Iterables.getFirst(listRoles(filter), null);
-    }
+   @Override
+   public User getCurrentUser() {
+      return currentUser.get();
+   }
 
-    @Override
-    public Role getRole(final Integer roleId)
-    {
-        RoleDto role = context.getApi().getAdminApi().getRole(roleId);
-        return wrap(context, Role.class, role);
-    }
+   @Override
+   public Enterprise getCurrentEnterprise() {
+      return currentEnterprise.get();
+   }
 
-    /*********************** Privilege ***********************/
+   /*********************** License ***********************/
 
-    @Override
-    public Privilege findPrivilege(final Predicate<Privilege> filter)
-    {
-        return Iterables.getFirst(listPrivileges(filter), null);
-    }
+   @Override
+   public Iterable<License> listLicenses() {
+      LicensesDto result = context.getApi().getConfigApi().listLicenses();
+      return wrap(context, License.class, result.getCollection());
+   }
 
-    @Override
-    public Iterable<Privilege> listPrivileges()
-    {
-        return listPrivileges.execute();
-    }
+   @Override
+   public Iterable<License> listLicenses(final boolean active) {
+      LicenseOptions options = LicenseOptions.builder().active(active).build();
+      LicensesDto result = context.getApi().getConfigApi().listLicenses(options);
+      return wrap(context, License.class, result.getCollection());
+   }
 
-    @Override
-    public Iterable<Privilege> listPrivileges(final Predicate<Privilege> filter)
-    {
-        return listPrivileges.execute(filter);
-    }
+   @Override
+   public Iterable<License> listLicenses(final Predicate<License> filter) {
+      return filter(listLicenses(), filter);
+   }
 
-    /*********************** User ***********************/
+   @Override
+   public License findLicense(final Predicate<License> filter) {
+      return getFirst(listLicenses(filter), null);
+   }
 
-    @Override
-    public User getCurrentUser()
-    {
-        return currentUser.get();
-    }
+   /*********************** System Properties ***********************/
 
-    @Override
-    public Enterprise getCurrentEnterprise()
-    {
-        return currentEnterprise.get();
-    }
+   @Override
+   public Iterable<SystemProperty> listSystemProperties() {
+      SystemPropertiesDto result = context.getApi().getConfigApi().listSystemProperties();
+      return wrap(context, SystemProperty.class, result.getCollection());
+   }
 
-    /*********************** License ***********************/
+   @Override
+   public Iterable<SystemProperty> listSystemProperties(final Predicate<SystemProperty> filter) {
+      return filter(listSystemProperties(), filter);
+   }
 
-    @Override
-    public Iterable<License> listLicenses()
-    {
-        return listLicenses.execute();
-    }
+   @Override
+   public SystemProperty findSystemProperty(final Predicate<SystemProperty> filter) {
+      return getFirst(listSystemProperties(filter), null);
+   }
 
-    @Override
-    public Iterable<License> listLicenses(final boolean active)
-    {
-        LicenseOptions options = LicenseOptions.builder().active(active).build();
-        return listLicenses.execute(options);
-    }
+   @Override
+   public SystemProperty getSystemProperty(final String name) {
+      PropertyOptions options = PropertyOptions.builder().name(name).build();
+      SystemPropertiesDto result = context.getApi().getConfigApi().listSystemProperties(options);
+      return getFirst(wrap(context, SystemProperty.class, result.getCollection()), null);
+   }
 
-    @Override
-    public Iterable<License> listLicenses(final Predicate<License> filter)
-    {
-        return listLicenses.execute(filter);
-    }
+   @Override
+   public Iterable<SystemProperty> listSystemProperties(final String component) {
+      PropertyOptions options = PropertyOptions.builder().component(component).build();
+      SystemPropertiesDto result = context.getApi().getConfigApi().listSystemProperties(options);
+      return wrap(context, SystemProperty.class, result.getCollection());
+   }
 
-    @Override
-    public License findLicense(final Predicate<License> filter)
-    {
-        return Iterables.getFirst(listLicenses(filter), null);
-    }
+   @Override
+   public Iterable<Category> listCategories() {
+      CategoriesDto result = context.getApi().getConfigApi().listCategories();
+      return wrap(context, Category.class, result.getCollection());
+   }
 
-    /*********************** System Properties ***********************/
+   @Override
+   public Iterable<Category> listCategories(final Predicate<Category> filter) {
+      return filter(listCategories(), filter);
+   }
 
-    @Override
-    public Iterable<SystemProperty> listSystemProperties()
-    {
-        return listProperties.execute();
-    }
+   @Override
+   public Category findCategory(final Predicate<Category> filter) {
+      return Iterables.getFirst(listCategories(filter), null);
+   }
 
-    @Override
-    public Iterable<SystemProperty> listSystemProperties(final Predicate<SystemProperty> filter)
-    {
-        return listProperties.execute(filter);
-    }
-
-    @Override
-    public SystemProperty findSystemProperty(final Predicate<SystemProperty> filter)
-    {
-        return Iterables.getFirst(listSystemProperties(filter), null);
-    }
-
-    @Override
-    public SystemProperty getSystemProperty(final String name)
-    {
-        PropertyOptions options = PropertyOptions.builder().name(name).build();
-        return Iterables.getFirst(listProperties.execute(options), null);
-    }
-
-    @Override
-    public Iterable<SystemProperty> listSystemProperties(final String component)
-    {
-        PropertyOptions options = PropertyOptions.builder().component(component).build();
-        return listProperties.execute(options);
-    }
-
-    @Override
-    public Category findCategory(final Predicate<Category> filter)
-    {
-        return Iterables.getFirst(listCategories(filter), null);
-    }
-
-    @Override
-    public Iterable<Category> listCategories()
-    {
-        return listCategories.execute();
-    }
-
-    @Override
-    public Iterable<Category> listCategories(final Predicate<Category> filter)
-    {
-        return listCategories.execute(filter);
-    }
+   @Override
+   public Category getCategory(Integer categoryId) {
+      CategoryDto result = context.getApi().getConfigApi().getCategory(categoryId);
+      return wrap(context, Category.class, result);
+   }
 }

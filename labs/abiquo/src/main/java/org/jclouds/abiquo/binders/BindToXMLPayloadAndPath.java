@@ -25,7 +25,6 @@ import static com.google.common.base.Preconditions.checkState;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import javax.ws.rs.PUT;
 
 import org.jclouds.http.HttpRequest;
 import org.jclouds.rest.binders.BindToXMLPayload;
@@ -35,48 +34,47 @@ import org.jclouds.xml.XMLParser;
 import com.abiquo.model.transport.SingleResourceTransportDto;
 
 /**
- * Binds teh given object to the payload and extracts the path parameters from the edit link.
+ * Binds the given object to the payload and extracts the path parameters from
+ * the edit link.
  * <p>
- * This method should be used in {@link PUT} methods to automatically extract the path parameters
- * from the edit link of the updated object.
+ * This method should be used in {@link PUT} methods to automatically extract
+ * the path parameters from the edit link of the updated object.
  * 
  * @author Ignasi Barrera
  */
 @Singleton
-public class BindToXMLPayloadAndPath extends BindToXMLPayload
-{
-    @Inject
-    public BindToXMLPayloadAndPath(final XMLParser xmlParser)
-    {
-        super(xmlParser);
-    }
+public class BindToXMLPayloadAndPath extends BindToXMLPayload {
+   @Inject
+   public BindToXMLPayloadAndPath(final XMLParser xmlParser) {
+      super(xmlParser);
+   }
 
-    @Override
-    public <R extends HttpRequest> R bindToRequest(final R request, final Object payload)
-    {
-        checkArgument(checkNotNull(request, "request") instanceof GeneratedHttpRequest,
+   @Override
+   public <R extends HttpRequest> R bindToRequest(final R request, final Object payload) {
+      checkArgument(checkNotNull(request, "request") instanceof GeneratedHttpRequest,
             "this binder is only valid for GeneratedHttpRequests");
-        GeneratedHttpRequest gRequest = (GeneratedHttpRequest) request;
-        checkState(gRequest.getArgs() != null, "args should be initialized at this point");
+      GeneratedHttpRequest gRequest = (GeneratedHttpRequest) request;
+      checkState(gRequest.getArgs() != null, "args should be initialized at this point");
 
-        // Update the request URI with the configured link URI
-        String newEndpoint = getNewEndpoint(gRequest, payload);
-        R updatedRequest = BindToPath.bindToPath(request, newEndpoint);
+      // Update the request URI with the configured link URI
+      String newEndpoint = getNewEndpoint(gRequest, payload);
+      R updatedRequest = BindToPath.bindToPath(request, newEndpoint);
 
-        // Add the payload
-        return super.bindToRequest(updatedRequest, payload);
-    }
+      // Add the payload
+      return super.bindToRequest(updatedRequest, payload);
+   }
 
-    /**
-     * Get the new endpoint to use.
-     * 
-     * @param gRequest The request.
-     * @param input The input parameter.
-     * @return The new endpoint to use.
-     */
-    protected String getNewEndpoint(final GeneratedHttpRequest gRequest, final Object input)
-    {
-        SingleResourceTransportDto dto = BindToPath.checkValidInput(input);
-        return BindToPath.getLinkToUse(gRequest, dto).getHref();
-    }
+   /**
+    * Get the new endpoint to use.
+    * 
+    * @param gRequest
+    *           The request.
+    * @param input
+    *           The input parameter.
+    * @return The new endpoint to use.
+    */
+   protected String getNewEndpoint(final GeneratedHttpRequest gRequest, final Object input) {
+      SingleResourceTransportDto dto = BindToPath.checkValidInput(input);
+      return BindToPath.getLinkToUse(gRequest, dto).getHref();
+   }
 }

@@ -29,12 +29,10 @@ import java.util.concurrent.atomic.AtomicReference;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
-import org.jclouds.compute.ComputeServiceContext;
 import org.jclouds.compute.config.BaseComputeServiceContextModule;
 import org.jclouds.compute.domain.Image;
 import org.jclouds.compute.extensions.ImageExtension;
 import org.jclouds.concurrent.RetryOnTimeOutExceptionSupplier;
-import org.jclouds.ec2.compute.EC2ComputeService;
 import org.jclouds.ec2.compute.domain.RegionAndName;
 import org.jclouds.ec2.compute.loaders.RegionAndIdToImage;
 import org.jclouds.ec2.compute.suppliers.RegionAndNameToImageSupplier;
@@ -77,7 +75,7 @@ public class EC2ComputeServiceContextModule extends BaseComputeServiceContextMod
    protected boolean shouldEagerlyParseImages(Injector injector) {
       // If no owners to query, then will never lookup all images
       String[] amiOwners = injector.getInstance(Key.get(String[].class, Names.named(PROPERTY_EC2_AMI_OWNERS)));
-      return (amiOwners.length > 0);
+      return amiOwners.length > 0;
    }
 
    @Override

@@ -39,90 +39,118 @@ import com.google.inject.ImplementedBy;
  * @author Susana Acedo
  */
 @ImplementedBy(BasePricingService.class)
-public interface PricingService
-{
+public interface PricingService {
 
-    /*********************** Currency ***********************/
+   /*********************** Currency ***********************/
 
-    /**
-     * Get the list of currencies.
-     */
-    Iterable<Currency> listCurrencies();
+   /**
+    * Get the list of currencies.
+    */
+   Iterable<Currency> listCurrencies();
 
-    /**
-     * Get the list of currencies matching the given filter.
-     */
-    Iterable<Currency> listCurrencies(final Predicate<Currency> filter);
+   /**
+    * Get the list of currencies matching the given filter.
+    */
+   Iterable<Currency> listCurrencies(final Predicate<Currency> filter);
 
-    /**
-     * Get the first currencies that matches the given filter or <code>null</code> if none is found.
-     */
-    Currency findCurrency(final Predicate<Currency> filter);
+   /**
+    * Get the first currencies that matches the given filter or
+    * <code>null</code> if none is found.
+    */
+   Currency findCurrency(final Predicate<Currency> filter);
 
-    /*********************** CostCode ***********************/
+   /**
+    * Get the currency with the given id.
+    * 
+    * @param currencyId
+    *           The id of the currency to get.
+    * @return The currency with the gicen id.
+    */
+   Currency getCurrency(final Integer currencyId);
 
-    /**
-     * Get the list of costcodes.
-     */
-    Iterable<CostCode> listCostCodes();
+   /*********************** CostCode ***********************/
 
-    /**
-     * Get the list of costcodes matching the given filter.
-     */
-    Iterable<CostCode> listCostCodes(final Predicate<CostCode> filter);
+   /**
+    * Get the list of costcodes.
+    */
+   Iterable<CostCode> listCostCodes();
 
-    /**
-     * Get the first costcodes that matches the given filter or <code>null</code> if none is found.
-     */
-    CostCode findCostCode(final Predicate<CostCode> filter);
+   /**
+    * Get the list of costcodes matching the given filter.
+    */
+   Iterable<CostCode> listCostCodes(final Predicate<CostCode> filter);
 
-    /*********************** PricingTemplate ***********************/
+   /**
+    * Get the first costcodes that matches the given filter or <code>null</code>
+    * if none is found.
+    */
+   CostCode findCostCode(final Predicate<CostCode> filter);
 
-    /**
-     * Get the list of pricingtemplates.
-     */
-    public Iterable<PricingTemplate> listPricingTemplates();
+   /**
+    * Get a cost code given its id.
+    * 
+    * @param costCodeId
+    *           The id of the cost code.
+    * @return The cost code.
+    */
+   CostCode getCostCode(Integer costCodeId);
 
-    /**
-     * Get the list of pricingtemplates matching the given filter.
-     */
-    public Iterable<PricingTemplate> listPricingTemplates(final Predicate<PricingTemplate> filter);
+   /*********************** PricingTemplate ***********************/
 
-    /**
-     * Get the first pricingtemplates that matches the given filter or <code>null</code> if none is
-     * found.
-     */
-    public PricingTemplate findPricingTemplate(final Predicate<PricingTemplate> filter);
+   /**
+    * Get the list of pricingtemplates.
+    */
+   Iterable<PricingTemplate> listPricingTemplates();
 
-    /*********************** CostCodeCurrency ***********************/
+   /**
+    * Get the list of pricingtemplates matching the given filter.
+    */
+   Iterable<PricingTemplate> listPricingTemplates(final Predicate<PricingTemplate> filter);
 
-    /**
-     * Get a cost code currency
-     */
-    public Iterable<CostCodeCurrency> getCostCodeCurrencies(Integer costcodeid, Integer currencyid);
+   /**
+    * Get the first pricingtemplates that matches the given filter or
+    * <code>null</code> if none is found.
+    */
+   PricingTemplate findPricingTemplate(final Predicate<PricingTemplate> filter);
 
-    /*********************** PricingCostCode ***********************/
+   /**
+    * Get a pricing template given its id.
+    * 
+    * @param pricingTemplateId
+    *           The id of the pricing template.
+    * @return The pricing template.
+    */
+   PricingTemplate getPricingTemplate(Integer pricingTemplateId);
 
-    /**
-     * Get pricing cost codes
-     */
-    public Collection<PricingCostCode> getPricingCostCodes(Integer pricingTemplateId);
+   /*********************** CostCodeCurrency ***********************/
 
-    /**
-     * Get a pricing cost code
-     */
-    PricingCostCode getPricingCostCode(Integer pricingTemplateId, Integer pricingCostCodeId);
+   /**
+    * Get a cost code currency
+    */
+   Iterable<CostCodeCurrency> getCostCodeCurrencies(Integer costcodeid, Integer currencyid);
 
-    /*********************** PricingTier ***********************/
+   /*********************** PricingCostCode ***********************/
 
-    /**
-     * Get pricing tiers
-     */
-    Collection<PricingTier> getPricingTiers(Integer pricingTemplateId);
+   /**
+    * Get pricing cost codes
+    */
+   Collection<PricingCostCode> getPricingCostCodes(Integer pricingTemplateId);
 
-    /**
-     * Get a pricing tier
-     */
-    PricingTier getPricingTier(Integer pricingTemplateId, Integer pricingTierId);
+   /**
+    * Get a pricing cost code
+    */
+   PricingCostCode getPricingCostCode(Integer pricingTemplateId, Integer pricingCostCodeId);
+
+   /*********************** PricingTier ***********************/
+
+   /**
+    * Get pricing tiers
+    */
+   Collection<PricingTier> getPricingTiers(Integer pricingTemplateId);
+
+   /**
+    * Get a pricing tier
+    */
+   PricingTier getPricingTier(Integer pricingTemplateId, Integer pricingTierId);
 
 }

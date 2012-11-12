@@ -25,6 +25,7 @@ import static org.jclouds.io.Payloads.newInputStreamPayload;
 import static org.jclouds.io.Payloads.newStringPayload;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNull;
+import static org.testng.Assert.fail;
 
 import java.io.File;
 import java.io.IOException;
@@ -40,7 +41,6 @@ import java.net.URI;
 import java.net.URLEncoder;
 import java.security.NoSuchAlgorithmException;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Date;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -147,6 +147,7 @@ import com.google.common.base.Joiner;
 import com.google.common.base.Optional;
 import com.google.common.base.Supplier;
 import com.google.common.base.Suppliers;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.ImmutableSet;
@@ -278,7 +279,7 @@ public class RestAnnotationProcessorTest extends BaseRestApiTest {
 
       try {
          child.getInstance(AsyncCallee.class);
-         assert false : "Callee shouldn't be bound yet";
+         fail("Callee shouldn't be bound yet");
       } catch (ConfigurationException e) {
 
       }
@@ -302,7 +303,7 @@ public class RestAnnotationProcessorTest extends BaseRestApiTest {
 
       try {
          child.getInstance(Callee.class);
-         assert false : "Callee shouldn't be bound yet";
+         fail("Callee shouldn't be bound yet");
       } catch (ConfigurationException e) {
 
       }
@@ -327,7 +328,7 @@ public class RestAnnotationProcessorTest extends BaseRestApiTest {
 
       try {
          child.getInstance(AsyncCallee.class);
-         assert false : "Callee shouldn't be bound yet";
+         fail("Callee shouldn't be bound yet");
       } catch (ConfigurationException e) {
 
       }
@@ -352,7 +353,7 @@ public class RestAnnotationProcessorTest extends BaseRestApiTest {
 
       try {
          child.getInstance(AsyncCallee.class);
-         assert false : "Callee shouldn't be bound yet";
+         fail("Callee shouldn't be bound yet");
       } catch (ConfigurationException e) {
 
       }
@@ -376,7 +377,7 @@ public class RestAnnotationProcessorTest extends BaseRestApiTest {
 
       try {
          child.getInstance(AsyncCallee.class);
-         assert false : "Callee shouldn't be bound yet";
+         fail("Callee shouldn't be bound yet");
       } catch (ConfigurationException e) {
 
       }
@@ -415,7 +416,7 @@ public class RestAnnotationProcessorTest extends BaseRestApiTest {
 
       try {
          child.getInstance(AsyncCallee.class);
-         assert false : "Callee shouldn't be bound yet";
+         fail("Callee shouldn't be bound yet");
       } catch (ConfigurationException e) {
 
       }
@@ -440,7 +441,7 @@ public class RestAnnotationProcessorTest extends BaseRestApiTest {
 
       try {
          child.getInstance(Callee.class);
-         assert false : "Callee shouldn't be bound yet";
+         fail("Callee shouldn't be bound yet");
       } catch (ConfigurationException e) {
 
       }
@@ -1586,8 +1587,8 @@ public class RestAnnotationProcessorTest extends BaseRestApiTest {
       Multimap<String, String> headers = factory(TestHeader.class).createRequest(oneHeader, new Object[] { "robot" })
             .getHeaders();
       assertEquals(headers.size(), 2);
-      assertEquals(headers.get("slash"), Collections.singletonList("/robot"));
-      assertEquals(headers.get("hyphen"), Collections.singletonList("-robot"));
+      assertEquals(headers.get("slash"), ImmutableList.of("/robot"));
+      assertEquals(headers.get("hyphen"), ImmutableList.of("-robot"));
    }
 
    @Headers(keys = "x-amz-copy-source", values = "/{bucket}")
@@ -1604,7 +1605,7 @@ public class RestAnnotationProcessorTest extends BaseRestApiTest {
       Multimap<String, String> headers = factory(TestClassHeader.class).createRequest(oneHeader,
             new Object[] { "robot" }).getHeaders();
       assertEquals(headers.size(), 1);
-      assertEquals(headers.get("x-amz-copy-source"), Collections.singletonList("/robot"));
+      assertEquals(headers.get("x-amz-copy-source"), ImmutableList.of("/robot"));
    }
 
    @Test
@@ -1613,7 +1614,7 @@ public class RestAnnotationProcessorTest extends BaseRestApiTest {
       Multimap<String, String> headers = factory(TestHeader.class).createRequest(oneHeader, new Object[] { "robot" })
             .getHeaders();
       assertEquals(headers.size(), 1);
-      assertEquals(headers.get("x-amz-copy-source"), Collections.singletonList("/robot"));
+      assertEquals(headers.get("x-amz-copy-source"), ImmutableList.of("/robot"));
    }
 
    @Test
@@ -1622,7 +1623,7 @@ public class RestAnnotationProcessorTest extends BaseRestApiTest {
       Multimap<String, String> headers = factory(TestHeader.class).createRequest(twoHeaders,
             new Object[] { "robot", "eggs" }).getHeaders();
       assertEquals(headers.size(), 1);
-      assertEquals(headers.get("x-amz-copy-source"), Collections.singletonList("/robot/eggs"));
+      assertEquals(headers.get("x-amz-copy-source"), ImmutableList.of("/robot/eggs"));
    }
 
    @Test
@@ -1631,7 +1632,7 @@ public class RestAnnotationProcessorTest extends BaseRestApiTest {
       Multimap<String, String> headers = factory(TestHeader.class).createRequest(twoHeadersOutOfOrder,
             new Object[] { "robot", "eggs" }).getHeaders();
       assertEquals(headers.size(), 1);
-      assertEquals(headers.get("x-amz-copy-source"), Collections.singletonList("/eggs/robot"));
+      assertEquals(headers.get("x-amz-copy-source"), ImmutableList.of("/eggs/robot"));
    }
 
    public class TestReplaceQueryOptions extends BaseHttpRequestOptions {
@@ -2099,9 +2100,9 @@ public class RestAnnotationProcessorTest extends BaseRestApiTest {
       assertEquals(request.getEndpoint().getPath(), "/1");
       assertEquals(request.getMethod(), HttpMethod.GET);
       assertEquals(request.getHeaders().size(), 2);
-      assertEquals(request.getHeaders().get(HttpHeaders.HOST), Collections.singletonList("localhost:9999"));
+      assertEquals(request.getHeaders().get(HttpHeaders.HOST), ImmutableList.of("localhost:9999"));
       assertEquals(request.getHeaders().get(HttpHeaders.IF_MODIFIED_SINCE),
-            Collections.singletonList(dateService.rfc822DateFormat(date)));
+            ImmutableList.of(dateService.rfc822DateFormat(date)));
    }
 
    public void testCreateGetOptionsThatProducesHeaders() throws SecurityException, NoSuchMethodException {
@@ -2113,9 +2114,9 @@ public class RestAnnotationProcessorTest extends BaseRestApiTest {
       assertEquals(request.getEndpoint().getPath(), "/1");
       assertEquals(request.getMethod(), HttpMethod.GET);
       assertEquals(request.getHeaders().size(), 2);
-      assertEquals(request.getHeaders().get(HttpHeaders.HOST), Collections.singletonList("localhost:9999"));
+      assertEquals(request.getHeaders().get(HttpHeaders.HOST), ImmutableList.of("localhost:9999"));
       assertEquals(request.getHeaders().get(HttpHeaders.IF_MODIFIED_SINCE),
-            Collections.singletonList(dateService.rfc822DateFormat(date)));
+            ImmutableList.of(dateService.rfc822DateFormat(date)));
    }
 
    public class PrefixOptions extends BaseHttpRequestOptions {
@@ -2197,7 +2198,7 @@ public class RestAnnotationProcessorTest extends BaseRestApiTest {
       assertEquals(request.getEndpoint().getPath(), "/" + key);
       assertEquals(request.getMethod(), HttpMethod.GET);
       assertEquals(request.getHeaders().size(), 1);
-      assertEquals(request.getHeaders().get(HttpHeaders.HOST), Collections.singletonList("localhost"));
+      assertEquals(request.getHeaders().get(HttpHeaders.HOST), ImmutableList.of("localhost"));
    }
 
    public void testCreatePutRequest() throws SecurityException, NoSuchMethodException, IOException {
@@ -2236,7 +2237,7 @@ public class RestAnnotationProcessorTest extends BaseRestApiTest {
       assertEquals(request.getEndpoint().getPath(), "/1");
       assertEquals(request.getMethod(), HttpMethod.GET);
       assertEquals(request.getHeaders().size(), 1);
-      assertEquals(request.getHeaders().get(HttpHeaders.HOST), Collections.singletonList("localhost:9999"));
+      assertEquals(request.getHeaders().get(HttpHeaders.HOST), ImmutableList.of("localhost:9999"));
    }
 
    public interface TestVirtualHost {
@@ -2259,7 +2260,7 @@ public class RestAnnotationProcessorTest extends BaseRestApiTest {
       assertEquals(request.getEndpoint().getPath(), "/1");
       assertEquals(request.getMethod(), HttpMethod.GET);
       assertEquals(request.getHeaders().size(), 1);
-      assertEquals(request.getHeaders().get(HttpHeaders.HOST), Collections.singletonList("localhost:9999"));
+      assertEquals(request.getHeaders().get(HttpHeaders.HOST), ImmutableList.of("localhost:9999"));
    }
 
    @Test
@@ -2298,7 +2299,7 @@ public class RestAnnotationProcessorTest extends BaseRestApiTest {
       Multimap<String, String> headers = factory(TestHeaders.class).buildHeaders(
             ImmutableMultimap.<String, String> of().entries(), method, "robot");
       assertEquals(headers.size(), 1);
-      assertEquals(headers.get("header"), Collections.singletonList("robot"));
+      assertEquals(headers.get("header"), ImmutableList.of("robot"));
    }
 
    @Test
@@ -2307,7 +2308,7 @@ public class RestAnnotationProcessorTest extends BaseRestApiTest {
       Multimap<String, String> headers = factory(TestHeaders.class).buildHeaders(
             ImmutableMultimap.<String, String> of().entries(), method, 1);
       assertEquals(headers.size(), 1);
-      assertEquals(headers.get("header"), Collections.singletonList("1"));
+      assertEquals(headers.get("header"), ImmutableList.of("1"));
    }
 
    @Test
@@ -2316,8 +2317,8 @@ public class RestAnnotationProcessorTest extends BaseRestApiTest {
       Multimap<String, String> headers = factory(TestHeaders.class).buildHeaders(
             ImmutableMultimap.<String, String> of().entries(), method, "robot", "egg");
       assertEquals(headers.size(), 2);
-      assertEquals(headers.get("header1"), Collections.singletonList("robot"));
-      assertEquals(headers.get("header2"), Collections.singletonList("egg"));
+      assertEquals(headers.get("header1"), ImmutableList.of("robot"));
+      assertEquals(headers.get("header2"), ImmutableList.of("egg"));
    }
 
    @Test
