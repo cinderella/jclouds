@@ -33,6 +33,7 @@ import org.jclouds.rest.functions.ReturnNullOnNotFoundOr404;
 import org.jclouds.vcloud.director.v1_5.domain.org.Org;
 import org.jclouds.vcloud.director.v1_5.domain.org.OrgList;
 import org.jclouds.vcloud.director.v1_5.filters.AddVCloudAuthorizationAndCookieToRequest;
+import org.jclouds.vcloud.director.v1_5.filters.AddVCloudVersionToRequest;
 import org.jclouds.vcloud.director.v1_5.functions.href.OrgURNToHref;
 
 import com.google.common.util.concurrent.ListenableFuture;
@@ -41,7 +42,7 @@ import com.google.common.util.concurrent.ListenableFuture;
  * @see OrgApi
  * @author Adrian Cole
  */
-@RequestFilters(AddVCloudAuthorizationAndCookieToRequest.class)
+@RequestFilters({AddVCloudAuthorizationAndCookieToRequest.class, AddVCloudVersionToRequest.class})
 public interface OrgAsyncApi {
 
    /**
