@@ -45,9 +45,6 @@ public class AppendApiVersionToVCloudMimeType implements Function<String, String
     @Override
     public String apply(final String input)
     {
-        if (!isVCloudMimeType(input)) {
-            return VCLOUD_DIRECTOR_MIME_TYPE_PREFIX + ";version=" + apiVersion;
-        }
 
         MediaType mediaType = MediaType.valueOf(checkNotNull(input, "input"));
         if (!mediaType.getParameters().containsKey("version"))
@@ -59,10 +56,4 @@ public class AppendApiVersionToVCloudMimeType implements Function<String, String
             return mediaType.toString();
         }
     }
-
-    private static boolean isVCloudMimeType(final String mimeType)
-    {
-        return mimeType.startsWith(VCLOUD_DIRECTOR_MIME_TYPE_PREFIX);
-    }
-
 }
