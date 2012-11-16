@@ -60,7 +60,7 @@ public interface MetadataAsyncApi {
        */
       @GET
       @Path("/metadata")
-      @Consumes
+      @Consumes(VCloudDirectorMediaType.APPLICATION_XML_1_5)
       @JAXBResponseParser
       @ExceptionParser(ReturnNullOnNotFoundOr404.class)
       ListenableFuture<Metadata> get();
@@ -70,7 +70,7 @@ public interface MetadataAsyncApi {
        */
       @GET
       @Path("/metadata/{key}")
-      @Consumes
+      @Consumes(VCloudDirectorMediaType.APPLICATION_XML_1_5)
       @ResponseParser(RegexValueParser.class)
       @ExceptionParser(ReturnNullOnNotFoundOr404.class)
       ListenableFuture<String> get(@PathParam("key") String key);
@@ -95,8 +95,8 @@ public interface MetadataAsyncApi {
        */
       @PUT
       @Path("/metadata/{key}")
-      @Consumes(VCloudDirectorMediaType.TASK)
-      @Produces(VCloudDirectorMediaType.METADATA_VALUE)
+      @Consumes(VCloudDirectorMediaType.TASK + ";version=1.5")
+      @Produces(VCloudDirectorMediaType.METADATA_VALUE + ";version=1.5")
       @JAXBResponseParser
       ListenableFuture<Task> put(@PathParam("key") String key,
             @BinderParam(BindStringAsMetadataValue.class) String metadataValue);

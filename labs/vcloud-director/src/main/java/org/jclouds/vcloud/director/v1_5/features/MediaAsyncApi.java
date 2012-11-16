@@ -67,8 +67,8 @@ public interface MediaAsyncApi {
     * @see MediaApi#add(URI, Media)
     */
    @POST
-   @Consumes(VCloudDirectorMediaType.MEDIA)
-   @Produces(VCloudDirectorMediaType.MEDIA)
+   @Consumes(VCloudDirectorMediaType.MEDIA + ";version=1.5")
+   @Produces(VCloudDirectorMediaType.MEDIA + ";version=1.5")
    @JAXBResponseParser
    ListenableFuture<Media> add(@EndpointParam URI updateHref, @BinderParam(BindToXMLPayload.class) Media media);
 
@@ -88,7 +88,7 @@ public interface MediaAsyncApi {
     */
    @PUT
    @Consumes(VCloudDirectorMediaType.TASK)
-   @Produces(VCloudDirectorMediaType.MEDIA)
+   @Produces(VCloudDirectorMediaType.MEDIA + ";version=1.5")
    @JAXBResponseParser
    ListenableFuture<Task> edit(@EndpointParam(parser = MediaURNToHref.class) String mediaUrn,
             @BinderParam(BindToXMLPayload.class) Media media);
@@ -136,7 +136,7 @@ public interface MediaAsyncApi {
     */
    @PUT
    @Consumes(VCloudDirectorMediaType.TASK)
-   @Produces(VCloudDirectorMediaType.MEDIA)
+   @Produces(VCloudDirectorMediaType.MEDIA + ";version=1.5")
    @JAXBResponseParser
    ListenableFuture<Task> edit(@EndpointParam URI mediaHref, @BinderParam(BindToXMLPayload.class) Media media);
 
